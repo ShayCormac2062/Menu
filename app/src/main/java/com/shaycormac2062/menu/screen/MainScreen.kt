@@ -6,12 +6,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.TransformOrigin
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -20,7 +18,6 @@ import com.shaycormac2062.menu.R
 
 @OptIn(
     ExperimentalFoundationApi::class,
-    ExperimentalAnimationApi::class,
     ExperimentalMaterialApi::class
 )
 @Composable
@@ -62,15 +59,14 @@ fun MainScreen() {
                         )
                     ) {
                         items(
-                            items = buttons,
-                            key = { it }
-                        ) {
+                            buttons.size
+                        ) { index ->
                             val dismissState = rememberDismissState()
                             if (
                                 dismissState.isDismissed(DismissDirection.EndToStart) ||
                                 dismissState.isDismissed(DismissDirection.StartToEnd)
                             ) {
-                                buttons.remove(it)
+                                if (index < buttons.size) buttons.removeAt(index)
                             }
                             SwipeToDismiss(
                                 state = dismissState,
@@ -83,10 +79,12 @@ fun MainScreen() {
                                 },
                                 background = {},
                                 dismissContent = {
-                                    MenuElement(
-                                        vector = ImageVector.vectorResource(id = it),
-                                        modifier = Modifier.animateItemPlacement()
-                                    )
+                                    if (index < buttons.size) {
+                                        MenuElement(
+                                            vector = ImageVector.vectorResource(id = buttons[index]),
+                                            modifier = Modifier.animateItemPlacement()
+                                        )
+                                    }
                                 }
                             )
                         }
